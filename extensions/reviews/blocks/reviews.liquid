@@ -1,0 +1,23 @@
+{% assign reviews = block.settings.product.metafields.fld.reviews.value %}
+{% assign number_of_reviews = reviews | size %}
+
+<div id="fld-reviews" class="fld-reviews">
+  <h2>Reviews ({{number_of_reviews}}) </h2>
+  <div class="review-wrapper">
+    {% for review in reviews %}
+      {% render 'reviews', review: review %}
+    {% endfor %}
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Reviews",
+  "target": "section",
+  "settings": [
+    { "type": "product", "id": "product", "label": "product", "autofill": true }
+  ]
+}
+{% endschema %}
+

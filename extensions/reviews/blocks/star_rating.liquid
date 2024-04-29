@@ -1,9 +1,11 @@
 {% assign avg_rating = block.settings.product.metafields.fld.avg_rating.value | round %}
 {% assign number_of_reviews = block.settings.product.metafields.fld.reviews.value %}
 
-<span style="color:{{ block.settings.colour }}">
-  {% render 'stars', rating: avg_rating, count: number_of_reviews.size %}
-</span>
+<a href="#fld-reviews" style="text-decoration: none">
+  <span style="color:{{ block.settings.colour }}">
+    {% render 'stars', rating: avg_rating, count: number_of_reviews.size %}
+  </span>
+</a>
 
 
 {% schema %}

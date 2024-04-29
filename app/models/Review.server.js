@@ -63,6 +63,110 @@ async function supplementReview(review, graphql) {
   };
 }
 
+// get all reviews that match shop, product and are public
+async function getAllProductReviews(shop, productId) {
+  const reviews = await db.Review.findMany({
+    where: { shop, productId, is_public: 1 },
+    orderBy: { id: "desc" },
+  });
+
+  return reviews;
+}
+
+export async function setReviewsMetafield(review, graphql) {
+  const data = await getAllProductReviews(review.shop, review.productId);
+
+  const reviewData = data.map((d) => {
+    const obj = {
+      title: d.title,
+      content: d.reviewContent,
+      username: d.user_name,
+      rating: d.rating,
+      created: d.createdAt,
+    };
+
+    return obj;
+  });
+
+  const json = JSON.stringify(reviewData);
+
+  await graphql(
+    `
+      mutation MetafieldsSet($metafields: [MetafieldsSetInput!]!) {
+        metafieldsSet(metafields: $metafields) {
+          metafields {
+            key
+            namespace
+            value
+            createdAt
+            updatedAt
+          }
+          userErrors {
+            field
+            message
+            code
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        metafields: [
+          {
+            key: "reviews",
+            namespace: "fld",
+            ownerId: review.productId,
+            type: "json",
+            value: json,
+          },
+        ],
+      },
+    },
+  );
+}
+
+export async function setAverageReviewMetafield(review, graphql) {
+  const reviews = await getAllProductReviews(review.shop, review.productId);
+  const ratings = reviews.map((r) => r.rating);
+  const avg = Math.ceil(
+    ratings.reduce((sum, a) => sum + a, 0) / ratings.length,
+  );
+
+  await graphql(
+    `
+      mutation MetafieldsSet($metafields: [MetafieldsSetInput!]!) {
+        metafieldsSet(metafields: $metafields) {
+          metafields {
+            key
+            namespace
+            value
+            createdAt
+            updatedAt
+          }
+          userErrors {
+            field
+            message
+            code
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        metafields: [
+          {
+            key: "avg_rating",
+            namespace: "fld",
+            ownerId: review.productId,
+            type: "number_integer",
+            value: String(avg),
+          },
+        ],
+      },
+    },
+  );
+}
+
 // QR code validation, title, product and destination URL is required
 export function validateReview(data) {
   const errors = {};
@@ -75,7 +179,6 @@ export function validateReview(data) {
     errors.productId = "Product is required";
   }
 
-  console.log(data);
   if (data.rating == 0) {
     errors.rating = "Rating is required";
   }

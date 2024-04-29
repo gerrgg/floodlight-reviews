@@ -3,7 +3,7 @@
 client_id = "edbd0c2ea55db55368b4365802de0b43"
 name = "floodlight-reviews"
 handle = "floodlight-reviews"
-application_url = "https://combat-fold-bat-load.trycloudflare.com"
+application_url = "https://sessions-tour-edited-bronze.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://combat-fold-bat-load.trycloudflare.com/auth/callback",
-  "https://combat-fold-bat-load.trycloudflare.com/auth/shopify/callback",
-  "https://combat-fold-bat-load.trycloudflare.com/api/auth/callback"
+  "https://sessions-tour-edited-bronze.trycloudflare.com/auth/callback",
+  "https://sessions-tour-edited-bronze.trycloudflare.com/auth/shopify/callback",
+  "https://sessions-tour-edited-bronze.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

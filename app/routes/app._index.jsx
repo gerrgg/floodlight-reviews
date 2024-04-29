@@ -65,6 +65,7 @@ const ReviewTable = ({ reviews }) => (
       { title: "Product" },
       { title: "Title" },
       { title: "Rating" },
+      { title: "Status" },
       { title: "Date created" },
     ]}
     selectable={false}
@@ -113,6 +114,9 @@ const ReviewTableRow = ({ review }) => {
             variant="monochromePlain"
           />
         ))}
+      </IndexTable.Cell>
+      <IndexTable.Cell>
+        {review.is_public ? "Published" : "Draft"}
       </IndexTable.Cell>
       <IndexTable.Cell>
         {new Date(review.createdAt).toDateString()}

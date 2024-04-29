@@ -37,6 +37,7 @@ export async function loader({ request, params }) {
       title: "",
       is_public: 0,
       rating: 0,
+      username: "Anonymous",
     });
   }
 
@@ -44,7 +45,7 @@ export async function loader({ request, params }) {
 }
 
 export async function action({ request, params }) {
-  const { session } = await authenticate.admin(request);
+  const { session, admin } = await authenticate.admin(request);
   const { shop } = session;
 
   /** @type {any} */
@@ -71,6 +72,13 @@ export async function action({ request, params }) {
     params.id === "new"
       ? await db.Review.create({ data })
       : await db.Review.update({ where: { id: Number(params.id) }, data });
+
+  const { setAverageReviewMetafield, setReviewsMetafield } = await import(
+    "../models/Review.server"
+  );
+
+  await setAverageReviewMetafield(data, admin.graphql);
+  await setReviewsMetafield(data, admin.graphql);
 
   return redirect(`/app/reviews/${review.id}`);
 }
@@ -126,7 +134,7 @@ export default function ReviewForm() {
       reviewContent: formState.reviewContent || "",
       rating: Number(formState.rating) || 0,
       is_public: formState.is_public,
-      user_name: formState.user_name,
+      user_name: formState.user_name || "Anonymous",
     };
 
     setCleanFormState({ ...formState });
@@ -151,10 +159,9 @@ export default function ReviewForm() {
                 <Select
                   options={statusOptions}
                   onChange={(is_public) => {
-                    console.log(is_public);
                     setFormState({ ...formState, is_public });
                   }}
-                  value={formState.is_public}
+                  value={String(formState.is_public)}
                 />
               </BlockStack>
             </Card>
@@ -240,7 +247,6 @@ export default function ReviewForm() {
                       }
                       error={errors.rating}
                     />
-                    {console.log(errors)}
                   </BlockStack>
                 </Card>
               </Grid.Cell>

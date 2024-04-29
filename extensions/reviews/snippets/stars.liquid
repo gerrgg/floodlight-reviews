@@ -1,4 +1,3 @@
-{{ 'ratings.stars.label' | t }}:
 
 {%- for i in (1..rating) -%}
   ★
@@ -7,4 +6,7 @@
 {%- for i in (1..blank_stars) -%}
   ☆
 {%- endfor -%}
+<span class="ratings-count">
+  ({{count}})
+</span>
 

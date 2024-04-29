@@ -1,12 +1,10 @@
 {% assign avg_rating = block.settings.product.metafields.fld.avg_rating.value | round %}
+{% assign number_of_reviews = block.settings.product.metafields.fld.reviews.value %}
+
 <span style="color:{{ block.settings.colour }}">
-  {% render 'stars', rating: avg_rating %}
+  {% render 'stars', rating: avg_rating, count: number_of_reviews.size %}
 </span>
-{% if avg_rating >= 4 %}
-  <br>
-  <img src="{{ "thumbs-up.png" | asset_img_url: '15x' }}" height="15" width="15" loading="lazy">
-  {{ 'ratings.home.recommendationText' | t }}
-{% endif %}
+
 
 {% schema %}
 {

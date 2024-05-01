@@ -1,8 +1,7 @@
-<div class="review" style="margin-bottom: 2.5rem">
-  <span style="color:{{ block.settings.colour }}">
-    {% render 'stars', rating: review.rating %}
-  </span>
-  <h4>{{review.username}} <small>{{ review.created | date: "%Y-%m-%d" }}</small></h4>
-  <h3>{{ review.title }}</h3>
-  <p>{{review.content}}</p>
-</div>
+{% for review in reviews %}
+  <div class="review" style="margin-bottom: 2.5rem">
+    <h4>{{review.username}} <small>{{ review.created | date: "%Y-%m-%d" }}</small></h4>
+    <h3>{{ review.title }}</h3>
+    <p>{{review.content}}</p>
+  </div>
+{% endfor %}

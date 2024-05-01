@@ -47,8 +47,6 @@ export async function loader({ request, params }) {
 export async function action({ request, params }) {
   const { session, admin } = await authenticate.admin(request);
   const { shop } = session;
-
-  /** @type {any} */
   const data = {
     ...Object.fromEntries(await request.formData()),
     shop,

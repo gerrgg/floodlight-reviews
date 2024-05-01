@@ -1,23 +1,95 @@
-{% assign reviews = block.settings.product.metafields.fld.reviews.value %}
-{% assign number_of_reviews = reviews | size %}
+{{ 'reviews.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'submit-review.js' | asset_url }}" defer="defer"></script>
 
-<div id="fld-reviews" class="fld-reviews">
-  <h2>Reviews ({{number_of_reviews}}) </h2>
+{% assign reviews = product.metafields.fld.reviews.value %}
+{% assign number_of_reviews = reviews | size %}
+{% assign heading = block.settings.heading %}
+
+{%- style -%}
+  #shopify-block-{{ block.id }} {
+    padding-top: {{ block.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ block.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-block-{{ block.id }} {
+      padding-top: {{ block.settings.padding_top }}px;
+      padding-bottom: {{ block.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div id="fld-reviews" class="fld-reviews {% if block.settings.include_padding %}padded{% endif %}">
+  <h2 class="fld-reviews__heading">{{ heading  }} ({{number_of_reviews}}) </h2>
   <div class="review-wrapper">
-    {% for review in reviews %}
-      {% render 'reviews', review: review %}
-    {% endfor %}
+    {% render 'reviews', reviews: reviews %}
+  </div>
+  <div class="form-wrapper">
+    <form id="review-submit-form">
+      <h3>Write a review</h3>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" value="test username" />
+      </div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" value="test title"/>
+      </div>
+      <div class="form-group">
+        <label>Rating</label>
+        <select name="rating">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Review</label>
+        <textarea type="text" name="content">test review lorem ipsum nice</textarea>
+        <input type="submit" value="Submit">
+      </div>
+      <input type="hidden" name="productId" value="{{product.id}}">
+      <input type="hidden" name="productVariantId" value="{{product.selected_or_first_available_variant.id}}">
+    </form>
   </div>
 </div>
 
 
 {% schema %}
-{
-  "name": "Reviews",
-  "target": "section",
-  "settings": [
-    { "type": "product", "id": "product", "label": "product", "autofill": true }
-  ]
-}
+  {
+    "name": "Reviews",
+    "target": "section",
+    "settings": [
+      { "type": "product", "id": "product", "label": "product", "autofill": true },
+      {
+        "type": "text",
+        "id": "heading",
+        "default": "Reviews",
+        "label": "Heading"
+      },
+      {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+        "default": 36
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 36
+      }
+    ]
+  }
 {% endschema %}
 

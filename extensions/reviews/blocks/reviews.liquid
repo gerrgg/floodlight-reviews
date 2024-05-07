@@ -1,5 +1,5 @@
 {{ 'reviews.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'submit-review.js' | asset_url }}" defer="defer"></script>
+{{ 'bootstrap.min.css' | asset_url | stylesheet_tag }}
 
 {% assign reviews = product.metafields.fld.reviews.value %}
 {% assign number_of_reviews = reviews | size %}
@@ -23,37 +23,8 @@
   <h2 class="fld-reviews__heading">{{ heading  }} ({{number_of_reviews}}) </h2>
   <div class="review-wrapper">
     {% render 'reviews', reviews: reviews %}
-  </div>
-  <div class="form-wrapper">
-    <form id="review-submit-form">
-      <h3>Write a review</h3>
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" name="username" value="test username" />
-      </div>
-      <div class="form-group">
-        <label>Title</label>
-        <input type="text" name="title" value="test title"/>
-      </div>
-      <div class="form-group">
-        <label>Rating</label>
-        <select name="rating">
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Review</label>
-        <textarea type="text" name="content">test review lorem ipsum nice</textarea>
-        <input type="submit" value="Submit">
-      </div>
-      <input type="hidden" name="productId" value="{{product.id}}">
-      <input type="hidden" name="productVariantId" value="{{product.selected_or_first_available_variant.id}}">
-    </form>
-  </div>
+    </div>
+  {% render 'review-form' %}
 </div>
 
 

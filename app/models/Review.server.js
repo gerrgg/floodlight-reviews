@@ -1,5 +1,18 @@
 import db from "../db.server";
 
+export async function getShop(graphql) {
+  const response = await graphql(`
+    query {
+      shop {
+        url
+      }
+    }
+  `);
+
+  const { data } = await response.json();
+  return data;
+}
+
 // get single QR code for QR code form
 export async function getReview(id, graphql) {
   // get a QR code by ID

@@ -1,3 +1,7 @@
 .fld-reviews__heading {
   margin: 0 0 3rem;
 }
+
+.form-wrapper {
+  max-width: 500px;
+}

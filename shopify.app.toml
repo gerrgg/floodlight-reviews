@@ -3,7 +3,7 @@
 client_id = "edbd0c2ea55db55368b4365802de0b43"
 name = "floodlight-reviews"
 handle = "floodlight-reviews"
-application_url = "https://costume-bar-assisted-trigger.trycloudflare.com"
+application_url = "https://techno-diagram-portrait-blond.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://costume-bar-assisted-trigger.trycloudflare.com/auth/callback",
-  "https://costume-bar-assisted-trigger.trycloudflare.com/auth/shopify/callback",
-  "https://costume-bar-assisted-trigger.trycloudflare.com/api/auth/callback"
+  "https://techno-diagram-portrait-blond.trycloudflare.com/auth/callback",
+  "https://techno-diagram-portrait-blond.trycloudflare.com/auth/shopify/callback",
+  "https://techno-diagram-portrait-blond.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

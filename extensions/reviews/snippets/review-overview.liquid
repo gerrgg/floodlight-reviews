@@ -1,0 +1,40 @@
+{% assign baseUrl = 'https://specification-gratis-courtesy-palm.trycloudflare.com/' %}
+{% assign submitPath = 'app/publicReviews/' %}
+
+<div class="customer-reviews-top">
+  <h2 class="fld-reviews__heading">{{ heading }}</h2>
+  <div class="star-wrapper">
+    {% for i in (1..5) %}
+      {% if i <= avg_rating %}
+        <span>
+          <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+        </span>
+      {% else  %}
+        <span>
+          <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+        </span>
+      {% endif %}
+    {% endfor %}
+    <span class="star-label">{{avg_rating}} out of 5</span>
+  </div>
+  <div class="number-of-ratings">
+    <small>{{number_of_reviews}} global ratings</small>
+  </div>
+</div>
+<hr />
+<div class="customer-reviews-bottom">
+  <h3 class="fld-reviews__heading">Review this product</h3>
+  <small>Share your thoughts with other customers</small>
+  <div class="button-wrapper">
+    <button 
+      class="button button--full-width button--secondary" 
+      id="fld-write-review"
+      data-product="{{product.handle}}"
+      data-variant="{{product.selected_or_first_available_variant.id}}"
+      data-action="{{baseUrl}}{{submitPath}}"
+      >
+      Write a review
+    </button>
+  </div>
+</div>
+<hr />

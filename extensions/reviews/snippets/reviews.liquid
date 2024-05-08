@@ -1,30 +1,30 @@
 {% for review in reviews %}
   <div class="review card mb-3 py-2">
     <div class="card-body">
-      <div class="d-flex align-items-center">
-        {% comment %} <img src="{{ 'default-user.jpeg' | asset_img_url }}"  width="35" height="35"/> {% endcomment %}
-        <h4 class="mb-0">{{review.username}}</h4>
+      <div class="review-header">
+        <img src="{{ 'default-user.jpeg' | asset_img_url }}"  width="35" height="35"/>
+        <h4 class="my-0 mx-4 reviewer-name">{{review.username}}</h4>
       </div>
-      <div class="d-flex align-items-center mt-4 mb-2">
+      <div class="d-flex align-items-center mt-4 mb-2 star-wrapper">
         {% for i in (1..5) %}
           {% if i <= review.rating %}
             <span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
             </span>
           {% else  %}
             <span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
             </span>
           {% endif %}
         {% endfor %}
-        <h3 class="mx-3 my-0 mb-2">
+        <h3 class="mx-3 my-0 mb-2 review-title">
           <strong>{{ review.title }}</strong>
         </h3>
       </div>
-      <div class="mb-2">
+      <div class="mb-2 review-date">
         <small>Reviewed on {{ review.created | date: "%b %d, %Y" }}</small>
       </div>
-      <p class="my-0">{{review.content}}</p>
+      <p class="my-0 review-content">{{review.content}}</p>
     </div>
   </div>
 {% endfor %}

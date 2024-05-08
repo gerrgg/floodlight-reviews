@@ -13,7 +13,7 @@ export async function action({ request }) {
   data.rating = Number(data.rating);
   data.is_public = 0;
 
-  if (!data.user_name.length) {
+  if (!data.user_name) {
     data.user_name = "Anonymous";
   }
 
@@ -23,7 +23,7 @@ export async function action({ request }) {
     return json({ errors }, { status: 422 });
   }
 
-  await db.Review.create({ data });
+  const review = await db.Review.create({ data });
 
   // set metafields
   // const { admin } = await unauthenticated.admin(shop);
@@ -35,6 +35,5 @@ export async function action({ request }) {
   // await setAverageReviewMetafield(data, admin.graphql);
   // await setReviewsMetafield(data, admin.graphql);
 
-  // return redirect(request.url);
-  return json(data);
+  return json({ review }, { status: 201 });
 }

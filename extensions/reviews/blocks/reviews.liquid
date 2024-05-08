@@ -1,9 +1,11 @@
 {{ 'reviews.css' | asset_url | stylesheet_tag }}
-{{ 'bootstrap.min.css' | asset_url | stylesheet_tag }}
+{{ 'review-modal.css' | asset_url | stylesheet_tag }}
+<script src="{{'review-modal.js' |  asset_url}}" defer></script>
 
 {% assign reviews = product.metafields.fld.reviews.value %}
 {% assign number_of_reviews = reviews | size %}
 {% assign heading = block.settings.heading %}
+{% assign avg_rating = product.metafields.fld.avg_rating.value | round %}
 
 {%- style -%}
   #shopify-block-{{ block.id }} {
@@ -20,13 +22,13 @@
 {%- endstyle -%}
 
 <div id="fld-reviews" class="fld-reviews {% if block.settings.include_padding %}padded{% endif %}">
-  <h2 class="fld-reviews__heading">{{ heading  }} ({{number_of_reviews}}) </h2>
+  <div class="d-flex align-items-center justify-content-between my-2 review-overview">
+    {% render 'review-overview', product: product, heading: heading, avg_rating: avg_rating, number_of_reviews: number_of_reviews %}
+  </div>
   <div class="review-wrapper">
     {% render 'reviews', reviews: reviews %}
-    </div>
-  {% render 'review-form' %}
+  </div>
 </div>
-
 
 {% schema %}
   {
@@ -37,7 +39,7 @@
       {
         "type": "text",
         "id": "heading",
-        "default": "Reviews",
+        "default": "Customer reviews",
         "label": "Heading"
       },
       {

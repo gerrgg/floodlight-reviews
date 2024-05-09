@@ -1,4 +1,4 @@
-const handleReviewModal = (() => {
+const handleReviewModal = (async () => {
   const trigger = document.querySelector("#fld-write-review");
 
   let modal,
@@ -9,7 +9,9 @@ const handleReviewModal = (() => {
     modalBackground,
     form,
     loader,
-    formAction;
+    formAction,
+    product,
+    review;
 
   // Hit shopify product API for product details
   const getProductData = async (handle) => {
@@ -48,13 +50,13 @@ const handleReviewModal = (() => {
     starWrapper.className = `star-wrapper star-rating-${rating}`;
   };
 
+  // sets success flag on modal to show success state
   const handleFormSubmitSuccess = (review) => {
     modal.classList.add("success");
     trigger.classList.add("successful-submit");
-
-    console.log(review);
   };
 
+  // loops errors and shows relevant error state
   const handleFormSubmitFailure = (review) => {
     for (const [key, value] of Object.entries(review.errors)) {
       const target = modal.querySelector(`.error-text.error-${key}`);
@@ -62,6 +64,7 @@ const handleReviewModal = (() => {
     }
   };
 
+  // submits form and returns applicable form state
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(form);
@@ -70,7 +73,6 @@ const handleReviewModal = (() => {
     try {
       const response = await fetch(formAction, {
         method: "POST",
-        // Set the FormData instance as the request body
         body: data,
       });
 
@@ -110,12 +112,24 @@ const handleReviewModal = (() => {
     form.addEventListener("submit", handleFormSubmit);
   };
 
+  const getProductReviewByIP = async (productId) => {
+    const IPResponse = await fetch("https://api.ipify.org?format=json");
+    const { ip } = await IPResponse.json();
+
+    const ReviewResponse = await fetch(`${formAction}${productId}/${ip}`);
+    const { data } = await ReviewResponse.json();
+
+    return data;
+  };
+
   // gets product data, creates HTML and sets events
   const createReviewModal = async () => {
-    const product = await getProductData(trigger.dataset.product);
+    if (review !== null) {
+      trigger.classList.add("successful-submit");
+    }
+
     const productVariantId = trigger.dataset.variant;
     const alreadySubmitted = trigger.classList.contains("successful-submit");
-    formAction = trigger.dataset.action;
 
     const html = `<div id="floodlight-review-modal" class="modal review-modal ${alreadySubmitted ? "success" : ""}">
     <div class="modal-background"></div>
@@ -144,38 +158,39 @@ const handleReviewModal = (() => {
         <p>Thank you for the review, we sincerely appreciate your feedback.</p>
       </div>
       <form id="review-submit-form">
-      <div class="headline-wrapper form-group">
-          <h3>Your name</h3>
-          <input name="user_name" type="text" placeholder="Anonymous" />
-          <div class="error-text error-user_name"></div>
-        </div>
-        <hr />
-        <div class="overall-rating form-group">
-          <h3>Overall Rating</h3>
-          <input type="hidden" name="rating" id="star-rating" required="true"/>
-          <div class="star-wrapper star-rating-unset">
-            <button type="button" class="outline" data-rating="1">
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
-            </button>
-            <button type="button" class="outline" data-rating="2">
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
-            </button>
-            <button type="button" class="outline" data-rating="3">
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
-            </button>
-            <button type="button" class="outline" data-rating="4">
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
-            </button>
-            <button type="button" class="outline" data-rating="5">
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
-              <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
-            </button>
+        <div class="form-row">
+          <div class="headline-wrapper form-group form-group-col-2">
+            <h3>Your name</h3>
+            <input name="user_name" type="text" placeholder="Anonymous" />
+            <div class="error-text error-user_name"></div>
           </div>
-          <div class="error-text error-rating"></div>
+          <div class="overall-rating form-group form-group-col-2">
+            <h3>Overall Rating</h3>
+            <input type="hidden" name="rating" id="star-rating" required="true"/>
+            <div class="star-wrapper star-rating-unset">
+              <button type="button" class="outline" data-rating="1">
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+              </button>
+              <button type="button" class="outline" data-rating="2">
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+              </button>
+              <button type="button" class="outline" data-rating="3">
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+              </button>
+              <button type="button" class="outline" data-rating="4">
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+              </button>
+              <button type="button" class="outline" data-rating="5">
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+                <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+              </button>
+            </div>
+            <div class="error-text error-rating"></div>
+          </div>
         </div>
         <hr />
         <div class="headline-wrapper form-group">
@@ -207,6 +222,9 @@ const handleReviewModal = (() => {
   };
 
   if (trigger) {
+    formAction = trigger.dataset.action;
+    product = await getProductData(trigger.dataset.product);
+    review = await getProductReviewByIP(product.id);
     trigger.addEventListener("click", createReviewModal);
   }
 })();

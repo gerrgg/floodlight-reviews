@@ -3,7 +3,7 @@
 client_id = "edbd0c2ea55db55368b4365802de0b43"
 name = "floodlight-reviews"
 handle = "floodlight-reviews"
-application_url = "https://installations-baltimore-isle-macedonia.trycloudflare.com"
+application_url = "https://tennessee-write-centre-cheese.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://installations-baltimore-isle-macedonia.trycloudflare.com/auth/callback",
-  "https://installations-baltimore-isle-macedonia.trycloudflare.com/auth/shopify/callback",
-  "https://installations-baltimore-isle-macedonia.trycloudflare.com/api/auth/callback"
+  "https://tennessee-write-centre-cheese.trycloudflare.com/auth/callback",
+  "https://tennessee-write-centre-cheese.trycloudflare.com/auth/shopify/callback",
+  "https://tennessee-write-centre-cheese.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

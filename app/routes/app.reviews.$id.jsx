@@ -44,6 +44,12 @@ export async function loader({ request, params }) {
   return json(await getReview(Number(params.id), admin.graphql));
 }
 
+async function getPublicIP() {
+  const IPResponse = await fetch("https://api.ipify.org?format=json");
+  const { ip } = await IPResponse.json();
+  return ip;
+}
+
 export async function action({ request, params }) {
   const { session, admin } = await authenticate.admin(request);
   const { shop } = session;
@@ -56,6 +62,7 @@ export async function action({ request, params }) {
 
   data.rating = Number(data.rating);
   data.is_public = Number(data.is_public);
+  data.ipAddress = await getPublicIP();
 
   if (data.action === "delete") {
     await db.Review.delete({ where: { id: Number(params.id) } });

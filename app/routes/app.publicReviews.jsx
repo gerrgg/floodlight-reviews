@@ -10,6 +10,8 @@ export async function action({ request }) {
     shop,
   };
 
+  console.log(data);
+
   data.rating = Number(data.rating);
   data.is_public = 0;
 

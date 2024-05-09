@@ -8,6 +8,7 @@ const handleReviewModal = (() => {
     stars,
     modalBackground,
     form,
+    loader,
     formAction;
 
   // Hit shopify product API for product details
@@ -48,6 +49,9 @@ const handleReviewModal = (() => {
   };
 
   const handleFormSubmitSuccess = (review) => {
+    modal.classList.add("success");
+    trigger.classList.add("successful-submit");
+
     console.log(review);
   };
 
@@ -61,6 +65,7 @@ const handleReviewModal = (() => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(form);
+    modal.classList.add("submitting");
 
     try {
       const response = await fetch(formAction, {
@@ -70,6 +75,8 @@ const handleReviewModal = (() => {
       });
 
       const dataJSON = await response.json();
+
+      modal.classList.remove("submitting");
 
       if (response.status === 201) {
         handleFormSubmitSuccess(dataJSON);
@@ -106,10 +113,11 @@ const handleReviewModal = (() => {
   // gets product data, creates HTML and sets events
   const createReviewModal = async () => {
     const product = await getProductData(trigger.dataset.product);
-    formAction = trigger.dataset.action;
     const productVariantId = trigger.dataset.variant;
+    const alreadySubmitted = trigger.classList.contains("successful-submit");
+    formAction = trigger.dataset.action;
 
-    const html = `<div id="floodlight-review-modal" class="modal review-modal">
+    const html = `<div id="floodlight-review-modal" class="modal review-modal ${alreadySubmitted ? "success" : ""}">
     <div class="modal-background"></div>
     <div class="modal-dialog">
       <div class="modal-header">
@@ -122,13 +130,26 @@ const handleReviewModal = (() => {
       <p>${product.title}</p>
       </div>
       <hr />
+      <div class="loader">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
+      <div class="success-wrapper">
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+          viewBox="0 0 50 50" xml:space="preserve">
+          <circle style="fill:#25AE88;" cx="25" cy="25" r="25"/>
+          <polyline style="fill:none;stroke:#FFFFFF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="
+            38,15 22,33 12,25 "/>
+        </svg>
+        <h2>Success!</h2>
+        <p>Thank you for the review, we sincerely appreciate your feedback.</p>
+      </div>
+      <form id="review-submit-form">
       <div class="headline-wrapper form-group">
           <h3>Your name</h3>
           <input name="user_name" type="text" placeholder="Anonymous" />
           <div class="error-text error-user_name"></div>
         </div>
         <hr />
-      <form id="review-submit-form">
         <div class="overall-rating form-group">
           <h3>Overall Rating</h3>
           <input type="hidden" name="rating" id="star-rating" required="true"/>

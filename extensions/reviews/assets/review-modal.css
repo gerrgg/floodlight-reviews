@@ -29,8 +29,8 @@
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
-  height: 75vh;
-  min-height: 650px;
+  max-height: 75vh;
+  /* min-height: 650px; */
   background: #fff;
   z-index: 3;
   padding: 2rem;
@@ -254,4 +254,52 @@
   height: 24px;
   display: block;
   pointer-events: none;
+}
+
+.loader {
+  min-height: 300px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#floodlight-review-modal.submitting .loader {
+  display: flex;
+}
+
+#floodlight-review-modal.submitting #review-submit-form {
+  display: none;
+}
+
+#floodlight-review-modal .success-wrapper {
+  min-height: 300px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  max-width: 300px;
+  margin: 3rem auto;
+}
+
+#floodlight-review-modal .success-wrapper h2 {
+  margin-bottom: 0;
+}
+
+#floodlight-review-modal .success-wrapper p {
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+#floodlight-review-modal .success-wrapper svg {
+  width: 128px;
+  height: 128px;
+}
+
+#floodlight-review-modal.success #review-submit-form {
+  display: none;
+}
+
+#floodlight-review-modal.success .success-wrapper {
+  display: flex;
 }

@@ -291,6 +291,10 @@
   align-items: center;
 }
 
+#fld-reviews .review-wrapper.loading .loader {
+  display: flex;
+}
+
 #floodlight-review-modal.submitting .loader {
   display: flex;
 }

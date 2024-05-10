@@ -2,15 +2,8 @@
 {% assign number_of_reviews = block.settings.product.metafields.fld.reviews.value | size %}
 
 <a href="#fld-reviews" style="text-decoration: none">
-  <span style="color:{{ block.settings.colour }}">
-    {% render 'stars', rating: avg_rating, count: number_of_reviews %}
-  </span>
+  {% render 'stars', rating: avg_rating, count: number_of_reviews, color: block.settings.colour %}
 </a>
-
-{%- style -%}
-  #shopify-block-{{ block.id }} {
-  }
-{%- endstyle -%}
 
 {% schema %}
   {
@@ -18,7 +11,7 @@
     "target": "section",
     "settings": [
       { "type": "product", "id": "product", "label": "product", "autofill": true },
-      { "type": "color", "id": "colour", "label": "Star Colour", "default": "#ff0000" }
+      { "type": "color", "id": "colour", "label": "Star Colour", "default": "#ffa41c" }
     ]
   }
 {% endschema %}

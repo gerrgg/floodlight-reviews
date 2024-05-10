@@ -8,10 +8,18 @@ const handleReviewModal = (async () => {
     stars,
     modalBackground,
     form,
-    loader,
     formAction,
     product,
+    successMessage,
+    successIcon,
     review;
+
+  let defaultSuccessIcon = `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+    viewBox="0 0 50 50" xml:space="preserve">
+    <circle style="fill:#25AE88;" cx="25" cy="25" r="25"/>
+    <polyline style="fill:none;stroke:#FFFFFF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="
+      38,15 22,33 12,25 "/>
+  </svg>`;
 
   // Hit shopify product API for product details
   const getProductData = async (handle) => {
@@ -124,7 +132,9 @@ const handleReviewModal = (async () => {
 
   // gets product data, creates HTML and sets events
   const createReviewModal = async () => {
-    if (review !== null) {
+    console.log(review);
+
+    if (review && review !== null) {
       trigger.classList.add("successful-submit");
     }
 
@@ -148,14 +158,8 @@ const handleReviewModal = (async () => {
         <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
       </div>
       <div class="success-wrapper">
-        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-          viewBox="0 0 50 50" xml:space="preserve">
-          <circle style="fill:#25AE88;" cx="25" cy="25" r="25"/>
-          <polyline style="fill:none;stroke:#FFFFFF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="
-            38,15 22,33 12,25 "/>
-        </svg>
-        <h2>Success!</h2>
-        <p>Thank you for the review, we sincerely appreciate your feedback.</p>
+        ${successIcon ? successIcon : defaultSuccessIcon}
+        ${successMessage}
       </div>
       <form id="review-submit-form">
         <div class="form-row">
@@ -215,7 +219,7 @@ const handleReviewModal = (async () => {
         </form>
       </div>
     </div>
-  </div>`;
+    </div>`;
 
     document.body.insertAdjacentHTML("beforeend", html);
     handleModalEvents();
@@ -223,8 +227,21 @@ const handleReviewModal = (async () => {
 
   if (trigger) {
     formAction = trigger.dataset.action;
-    product = await getProductData(trigger.dataset.product);
-    review = await getProductReviewByIP(product.id);
+    successMessage = trigger.dataset.success;
+    successIcon = `<img src="https:${trigger.dataset.successicon}"/>`;
+
+    try {
+      product = await getProductData(trigger.dataset.product);
+    } catch (e) {
+      console.log("product data not found");
+    }
+
+    try {
+      review = await getProductReviewByIP(product.id);
+    } catch (e) {
+      console.log("ip not found");
+    }
+
     trigger.addEventListener("click", createReviewModal);
   }
 })();

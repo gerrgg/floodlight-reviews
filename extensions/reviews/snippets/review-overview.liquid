@@ -1,5 +1,11 @@
-{% assign baseUrl = 'https://tennessee-write-centre-cheese.trycloudflare.com/' %}
+{% assign baseUrl = 'https://ebony-output-government-fly.trycloudflare.com/' %}
 {% assign submitPath = 'app/publicReviews/' %}
+
+{%- style -%}
+  .star-wrapper svg{
+    color: {{starColor}}
+  }
+{%- endstyle -%}
 
 <div class="customer-reviews-top">
   <h2 class="fld-reviews__heading">{{ heading }}</h2>
@@ -17,11 +23,9 @@
     {% endfor %}
     <span class="star-label">{{avg_rating}} out of 5</span>
   </div>
-  {% if numbers_of_reviews > 0 %}
   <div class="number-of-ratings">
     <small>{{number_of_reviews}} global ratings</small>
   </div>
-  {% endif %}
 </div>
 <hr />
 <div class="customer-reviews-bottom">
@@ -34,6 +38,8 @@
       data-product="{{product.handle}}"
       data-variant="{{product.selected_or_first_available_variant.id}}"
       data-action="{{baseUrl}}{{submitPath}}"
+      data-success="{{successMessage}}"
+      data-successIcon="{{successIcon | image_url : width: 124}}"
       >
       Write a review
     </button>

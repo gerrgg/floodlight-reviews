@@ -1,11 +1,20 @@
 {{ 'reviews.css' | asset_url | stylesheet_tag }}
 {{ 'review-modal.css' | asset_url | stylesheet_tag }}
 <script src="{{'review-modal.js' |  asset_url}}" defer></script>
+<script src="{{'reviews.js' |  asset_url}}" defer></script>
 
 {% assign reviews = product.metafields.fld.reviews.value %}
 {% assign number_of_reviews = reviews | size %}
 {% assign heading = block.settings.heading %}
 {% assign avg_rating = product.metafields.fld.avg_rating.value | round %}
+{% assign starColor = block.settings.colour %}
+{% assign reviewLayout = block.settings.layout %}
+{% assign emptyReviewsContent = block.settings.noReviewsContent %}
+{% assign successMessage = block.settings.successMessage %}
+{% assign successIcon = block.settings.successIcon %}
+
+{% assign baseUrl = 'https://ebony-output-government-fly.trycloudflare.com/' %}
+{% assign submitPath = 'app/publicReviews/' %}
 
 {%- style -%}
   #shopify-block-{{ block.id }} {
@@ -21,12 +30,18 @@
   }
 {%- endstyle -%}
 
-<div id="fld-reviews" class="fld-reviews {% if block.settings.include_padding %}padded{% endif %}">
-  <div class="d-flex align-items-center justify-content-between my-2 review-overview">
-    {% render 'review-overview', product: product, heading: heading, avg_rating: avg_rating, number_of_reviews: number_of_reviews %}
+<div id="fld-reviews" class="fld-reviews fld-reviews--layout-{{ reviewLayout }}">
+  <div class="review-overview">
+    {% render 'review-overview', reviews: reviews, starColor: starColor, product: product, heading: heading, avg_rating: avg_rating, number_of_reviews: number_of_reviews, successMessage: successMessage, successIcon: successIcon %}
   </div>
-  <div class="review-wrapper">
-    {% render 'reviews', reviews: reviews %}
+  <div 
+    class="review-wrapper" 
+    data-api="{{baseUrl}}{{submitPath}}" 
+    data-product="{{product.id}}" 
+    data-emptyreviewscontent="{{emptyReviewsContent}}"
+    data-userimg="{{ 'default-user.jpeg' | asset_img_url }}"
+  >
+    {% render 'reviews', emptyReviewsContent: emptyReviewsContent, reviews: reviews, starColor: starColor %}
   </div>
 </div>
 
@@ -36,11 +51,48 @@
     "target": "section",
     "settings": [
       { "type": "product", "id": "product", "label": "product", "autofill": true },
+      { "type": "color", "id": "colour", "label": "Star Colour", "default": "#ffa41c" },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Layout",
+        "options": [
+          {
+            "value": "sidebar",
+            "label": "Sidebar"
+          },
+          {
+            "value": "header",
+            "label": "Header"
+          }
+        ],
+        "default": "sidebar"
+      },
       {
         "type": "text",
         "id": "heading",
         "default": "Customer reviews",
         "label": "Heading"
+      },
+      {
+        "type": "richtext",
+        "id": "noReviewsContent",
+        "default": "<h2>Be the first one to write a review!</h2><p>Help other users make informed decisions.</p>",
+        "label": "Zero Reviews Message",
+        "info": "Shown in place of reviews when a product has none."
+      },
+      {
+        "type": "image_picker",
+        "id": "successIcon",
+        "label": "Success Icon",
+        "info": "Icon shown on successful form submission"
+      },
+      {
+        "type": "richtext",
+        "id": "successMessage",
+        "default": "<h2>Success!</h2><p>Thank you for the review, we sincerely appreciate your feedback.</p>",
+        "label": "Success Message",
+        "info": "Shown in place of review form after successful submission"
       },
       {
       "type": "range",

@@ -1,10 +1,20 @@
 const handleReviews = (async () => {
-  let html, reviews, formAction, productId, emptyReviewsContent, userProfile;
+  let html,
+    reviews,
+    formAction,
+    productId,
+    emptyReviewsContent,
+    userProfile,
+    sort;
   const root = document.querySelector("#fld-reviews .review-wrapper");
   const loader = `<div class="loader"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>`;
+  const sortSelect = document.querySelector("select#sort-by");
+  const wrapper = root.querySelector(".reviews-inject-location");
+  const filterHeader = root.querySelector("#filter-header > span");
 
-  const getProductReviewsByID = async (productId) => {
-    const ReviewResponse = await fetch(`${formAction}${productId}/`);
+  const getProductReviewsByID = async () => {
+    wrapper.innerHTML = loader;
+    const ReviewResponse = await fetch(`${formAction}${productId}/${sort}`);
     const { data } = await ReviewResponse.json();
     return data;
   };
@@ -23,18 +33,20 @@ const handleReviews = (async () => {
     return array.join(" ");
   };
 
-  const convertDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
+  const handleSortByChange = async ({ target }) => {
+    sort = target.value;
+
+    const labels = {
+      recent: "Most recent",
+      top: "Top rated",
+    };
+
+    filterHeader.innerText = labels[sort];
+    reviews = await getProductReviewsByID(sort);
+    populateReviewsWrapper(reviews);
   };
 
   const populateReviewsWrapper = async () => {
-    root.innerHTML = loader;
-    root.classList.add("loading");
-    reviews = await getProductReviewsByID(productId);
-
-    console.log(reviews);
-
     if (reviews && reviews === null) {
       html = `
       <div class="no-reviews">
@@ -63,20 +75,26 @@ const handleReviews = (async () => {
               <p class="my-0 review-content">${review.reviewContent}</p>
             </div>
           </div>
-      `;
+        `;
 
         return reviewHTML;
       });
     }
 
-    root.innerHTML = html;
+    wrapper.innerHTML = html.join(" ");
   };
+
+  if (sortSelect) {
+    sort = sortSelect.value;
+    sortSelect.addEventListener("change", handleSortByChange);
+  }
 
   if (root) {
     formAction = root.dataset.api;
     productId = root.dataset.product;
     emptyReviewsContent = root.dataset.emptyreviewscontent;
     userProfile = root.dataset.userimg;
-    populateReviewsWrapper();
+    reviews = await getProductReviewsByID();
+    populateReviewsWrapper(reviews);
   }
 })();

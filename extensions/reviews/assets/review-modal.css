@@ -291,7 +291,7 @@
   align-items: center;
 }
 
-#fld-reviews .review-wrapper.loading .loader {
+#fld-reviews .review-wrapper .loader {
   display: flex;
 }
 

@@ -41,7 +41,19 @@
     data-emptyreviewscontent="{{emptyReviewsContent}}"
     data-userimg="{{ 'default-user.jpeg' | asset_img_url }}"
   >
-    {% render 'reviews', emptyReviewsContent: emptyReviewsContent, reviews: reviews, starColor: starColor %}
+    <div class="filters">
+      <div class="filter">
+        <label>Sort by</label>
+        <select name="sort-by" id="sort-by">
+          <option value="recent">Most Recent</option>
+          <option value="top">Top Rated</option>
+        </select>
+      </div>
+    </div>
+    <h2 id="filter-header"><span>Most recent</span> reviews</h2>
+    <div class="reviews-inject-location">
+      {% render 'reviews', emptyReviewsContent: emptyReviewsContent, reviews: reviews, starColor: starColor %}
+    </div>
   </div>
 </div>
 

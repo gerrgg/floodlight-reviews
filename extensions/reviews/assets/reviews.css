@@ -184,3 +184,9 @@ div.number-of-ratings {
   .button-wrapper {
   margin: 0;
 }
+
+#fld-reviews .filters {
+  border-bottom: 1px solid #bbbfbf;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+}

@@ -20,7 +20,7 @@
 }
 
 .review.card {
-  margin: 0 0 3rem 0;
+  margin: 0 0 3.5rem 0;
   height: auto !important;
 }
 
@@ -29,8 +29,8 @@
 }
 
 .review-content {
-  margin: 1rem 0 0 0;
   letter-spacing: 0;
+  margin: 0;
 }
 
 .form-wrapper {
@@ -192,11 +192,11 @@ div.number-of-ratings {
 }
 
 .review .helpful-wrapper {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .review .helpful-wrapper .button-wrapper {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .review .helpful-wrapper .button-wrapper button {
@@ -207,4 +207,18 @@ div.number-of-ratings {
   min-width: 40px;
   font-size: 1.25rem;
   letter-spacing: 0;
+}
+
+.review .helpful-wrapper .button-wrapper small {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.review .helpful-wrapper .button-wrapper small.success {
+  color: #067d62;
+}
+
+.review .helpful-wrapper .button-wrapper small.error {
+  color: #dc3545;
 }

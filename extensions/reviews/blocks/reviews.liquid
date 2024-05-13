@@ -13,7 +13,7 @@
 {% assign successMessage = block.settings.successMessage %}
 {% assign successIcon = block.settings.successIcon %}
 
-{% assign baseUrl = 'https://visibility-campaigns-farmer-characteristics.trycloudflare.com/' %}
+{% assign baseUrl = 'https://grid-careers-celtic-chip.trycloudflare.com/' %}
 {% assign submitPath = 'app/publicReviews/' %}
 
 {%- style -%}
@@ -45,12 +45,13 @@
       <div class="filter">
         <label>Sort by</label>
         <select name="sort-by" id="sort-by">
+          <option value="helpful">Most Helpful</option>
           <option value="recent">Most Recent</option>
           <option value="top">Top Rated</option>
         </select>
       </div>
     </div>
-    <h2 id="filter-header"><span>Most recent</span> reviews</h2>
+    <h2 id="filter-header"><span>Most Helpful</span> reviews</h2>
     <div class="reviews-inject-location">
       {% render 'reviews', emptyReviewsContent: emptyReviewsContent, reviews: reviews, starColor: starColor %}
     </div>

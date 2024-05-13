@@ -126,8 +126,6 @@ const handleReviewModal = (async () => {
     const IPResponse = await fetch("https://api.ipify.org?format=json");
     const { ip } = await IPResponse.json();
 
-    console.log(`${formAction}${productId}/${ip}`);
-
     const ReviewResponse = await fetch(`${formAction}${productId}/${ip}`);
     const { data } = await ReviewResponse.json();
 
@@ -136,8 +134,6 @@ const handleReviewModal = (async () => {
 
   // gets product data, creates HTML and sets events
   const createReviewModal = async () => {
-    console.log(review);
-
     if (review && review !== null) {
       trigger.classList.add("successful-submit");
     }
@@ -231,7 +227,7 @@ const handleReviewModal = (async () => {
 
   if (trigger) {
     successMessage = trigger.dataset.success;
-    successIcon = `<img src="https:${trigger.dataset.successicon}"/>`;
+    successIcon = `${trigger.dataset.successicon}`;
     formAction = reviewWrapper.dataset.api;
 
     try {

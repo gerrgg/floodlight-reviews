@@ -190,3 +190,21 @@ div.number-of-ratings {
   padding-bottom: 2rem;
   margin-bottom: 2rem;
 }
+
+.review .helpful-wrapper {
+  margin-top: 1rem;
+}
+
+.review .helpful-wrapper .button-wrapper {
+  margin-top: 1rem;
+}
+
+.review .helpful-wrapper .button-wrapper button {
+  /* font-size: 1rem; */
+  height: 30px;
+  min-height: 30px;
+  padding: 0 2rem;
+  min-width: 40px;
+  font-size: 1.25rem;
+  letter-spacing: 0;
+}

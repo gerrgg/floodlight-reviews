@@ -3,7 +3,7 @@
 client_id = "edbd0c2ea55db55368b4365802de0b43"
 name = "floodlight-reviews"
 handle = "floodlight-reviews"
-application_url = "https://ebony-output-government-fly.trycloudflare.com"
+application_url = "https://visibility-campaigns-farmer-characteristics.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://ebony-output-government-fly.trycloudflare.com/auth/callback",
-  "https://ebony-output-government-fly.trycloudflare.com/auth/shopify/callback",
-  "https://ebony-output-government-fly.trycloudflare.com/api/auth/callback"
+  "https://visibility-campaigns-farmer-characteristics.trycloudflare.com/auth/callback",
+  "https://visibility-campaigns-farmer-characteristics.trycloudflare.com/auth/shopify/callback",
+  "https://visibility-campaigns-farmer-characteristics.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

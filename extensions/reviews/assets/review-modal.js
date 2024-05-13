@@ -14,6 +14,8 @@ const handleReviewModal = (async () => {
     successIcon,
     review;
 
+  const reviewWrapper = document.querySelector("#fld-reviews .review-wrapper");
+
   let defaultSuccessIcon = `<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
     viewBox="0 0 50 50" xml:space="preserve">
     <circle style="fill:#25AE88;" cx="25" cy="25" r="25"/>
@@ -124,6 +126,8 @@ const handleReviewModal = (async () => {
     const IPResponse = await fetch("https://api.ipify.org?format=json");
     const { ip } = await IPResponse.json();
 
+    console.log(`${formAction}${productId}/${ip}`);
+
     const ReviewResponse = await fetch(`${formAction}${productId}/${ip}`);
     const { data } = await ReviewResponse.json();
 
@@ -226,9 +230,9 @@ const handleReviewModal = (async () => {
   };
 
   if (trigger) {
-    formAction = trigger.dataset.action;
     successMessage = trigger.dataset.success;
     successIcon = `<img src="https:${trigger.dataset.successicon}"/>`;
+    formAction = reviewWrapper.dataset.api;
 
     try {
       product = await getProductData(trigger.dataset.product);

@@ -33,6 +33,39 @@ const handleReviews = (async () => {
     return array.join(" ");
   };
 
+  const updateReviewsWrapper = async () => {
+    try {
+      reviews = await getProductReviewsByID();
+      await populateReviewsWrapper(reviews);
+
+      const helpfulWrapper = document.querySelector(".helpful-wrapper");
+      const helpfulButtonWrapper =
+        helpfulWrapper.querySelector(".button-wrapper");
+      const helpfulButton = helpfulWrapper.querySelector(".helpful-button");
+
+      helpfulButton.addEventListener("click", async () => {
+        const id = helpfulButton.dataset.id;
+        helpfulButtonWrapper.innerHTML = `<small>Sending feedback...</small>`;
+
+        const response = await fetch(`${formAction}/${id}/helpful`, {
+          method: "POST",
+        });
+
+        const { status } = await response.json();
+
+        console.log(status);
+
+        if (status === 201) {
+          helpfulButtonWrapper.innerHTML = `Thank you for your feedback`;
+        } else {
+          helpfulButtonWrapper.innerHTML = `Something went wrong, please try again later`;
+        }
+      });
+    } catch (e) {
+      handleErrorState();
+    }
+  };
+
   const handleSortByChange = async ({ target }) => {
     sort = target.value;
 
@@ -40,10 +73,15 @@ const handleReviews = (async () => {
       recent: "Most recent",
       top: "Top rated",
     };
-
     filterHeader.innerText = labels[sort];
-    reviews = await getProductReviewsByID(sort);
-    populateReviewsWrapper(reviews);
+    await updateReviewsWrapper();
+  };
+
+  const handleErrorState = () => {
+    filterHeader.parentElement.style.display = "none";
+    wrapper.innerHTML = ` <div class="no-reviews">
+      ${emptyReviewsContent}
+    </div>`;
   };
 
   const populateReviewsWrapper = async () => {
@@ -57,7 +95,7 @@ const handleReviews = (async () => {
         let starsHTML = buildStarsHTML(review.rating);
 
         const reviewHTML = `
-          <div class="review card mb-3 py-2">
+          <div class="review card">
             <div class="card-body">
               <div class="review-header">
                 <img src="${userProfile}"  width="35" height="35"/>
@@ -65,14 +103,20 @@ const handleReviews = (async () => {
               </div>
               <div class="star-wrapper">
                 ${starsHTML}
-                <h3 class="mx-3 my-0 mb-2 review-title">
+                </div>
+                <h3 class="review-title">
                   <strong>${review.title}</strong>
                 </h3>
-              </div>
               <div class="mb-2 review-date">
                 <small>Reviewed on ${new Date(review.createdAt).toDateString()}</small>
               </div>
               <p class="my-0 review-content">${review.reviewContent}</p>
+              <div class="helpful-wrapper">
+                <small style="display: ${review.helpful > 0 ? "block" : "none"}">${review.helpful} people found this helpful</small>
+                <div class="button-wrapper">
+                  <button class="button button--secondary button-small helpful-button" data-id="${review.id}">Helpful</button>
+                </div>
+              </div>
             </div>
           </div>
         `;
@@ -94,7 +138,7 @@ const handleReviews = (async () => {
     productId = root.dataset.product;
     emptyReviewsContent = root.dataset.emptyreviewscontent;
     userProfile = root.dataset.userimg;
-    reviews = await getProductReviewsByID();
-    populateReviewsWrapper(reviews);
+
+    await updateReviewsWrapper();
   }
 })();

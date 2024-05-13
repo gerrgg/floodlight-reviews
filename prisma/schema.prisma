@@ -46,6 +46,7 @@ model Review {
   user_name        String
   rating           Int
   ipAddress        String?
+  helpful          Int       @default(0)
   is_public        Int       @default(0)
   createdAt        DateTime  @default(now())
 }

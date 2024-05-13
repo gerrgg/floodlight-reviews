@@ -1,5 +1,3 @@
-{% assign baseUrl = 'https://ebony-output-government-fly.trycloudflare.com/' %}
-{% assign submitPath = 'app/publicReviews/' %}
 
 {%- style -%}
   .star-wrapper svg{
@@ -37,7 +35,6 @@
       id="fld-write-review"
       data-product="{{product.handle}}"
       data-variant="{{product.selected_or_first_available_variant.id}}"
-      data-action="{{baseUrl}}{{submitPath}}"
       data-success="{{successMessage}}"
       data-successIcon="{{successIcon | image_url : width: 124}}"
       >

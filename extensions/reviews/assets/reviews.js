@@ -1,12 +1,34 @@
 const handleReviews = (async () => {
   let reviews = [];
   let limit = 5;
-  let html, formAction, productId, emptyReviewsContent, userProfile, sort;
+  let html,
+    formAction,
+    productId,
+    emptyReviewsContent,
+    userProfile,
+    sort,
+    allReviews;
   const root = document.querySelector("#fld-reviews .review-wrapper");
   const loader = `<div class="loader"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>`;
   const sortSelect = document.querySelector("select#sort-by");
   const wrapper = root.querySelector(".reviews-inject-location");
   const filterHeader = root.querySelector("#filter-header > span");
+  const filtersWrapper = root.querySelector(".filters");
+  const overviewStars = document.querySelector(
+    "#fld-reviews .review-overview .star-wrapper",
+  );
+  const overviewRatings = document.querySelector(
+    "#fld-reviews .review-overview .number-of-ratings",
+  );
+
+  const reviewsBreakdown = document.querySelector(".reviews-breakdown");
+
+  const getAllProductReviews = async () => {
+    wrapper.innerHTML = loader;
+    const ReviewResponse = await fetch(`${formAction}${productId}/`);
+    const { data } = await ReviewResponse.json();
+    return data;
+  };
 
   const getProductReviewsByID = async () => {
     wrapper.innerHTML = loader;
@@ -17,14 +39,14 @@ const handleReviews = (async () => {
     return data;
   };
 
-  const buildStarsHTML = (rating) => {
+  const buildStarsHTML = (rating, size = 18) => {
     let array = Array.from({ length: 5 }).map((_, i) => {
       return i + 1 <= rating
         ? `<span>
-        <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+        <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
       </span>`
         : `<span>
-        <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
+        <svg fill="currentcolor" xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24"><path d="M12 6.76l1.379 4.246h4.465l-3.612 2.625 1.379 4.246-3.611-2.625-3.612 2.625 1.379-4.246-3.612-2.625h4.465l1.38-4.246zm0-6.472l-2.833 8.718h-9.167l7.416 5.389-2.833 8.718 7.417-5.388 7.416 5.388-2.833-8.718 7.417-5.389h-9.167l-2.833-8.718z"/></svg>
       </span>`;
     });
 
@@ -74,11 +96,45 @@ const handleReviews = (async () => {
     }
   };
 
+  const averageRating = (array) => array.reduce((a, b) => a + b) / array.length;
+
+  const populateOverviewWrapper = async () => {
+    const rating = Math.ceil(averageRating(reviews.map((r) => r.rating)));
+    const html =
+      buildStarsHTML(rating, 24) +
+      ` <span class="star-label">${rating} out of 5</span>`;
+    overviewStars.innerHTML = html;
+
+    overviewRatings.innerHTML = `<small>${allReviews.length} global ratings</small>`;
+  };
+
+  const populateReviewsBreakdown = async () => {
+    const ratings = [0, 0, 0, 0, 0];
+
+    allReviews.forEach((r) => (ratings[r.rating - 1] += 1));
+
+    console.log(ratings);
+
+    const tableRowsHTML = ratings.map(
+      (rating, i) => `
+    <tr>
+      <td>${i + 1} star</td>
+      <td><div class="progress-bar"><span style="width: ${parseInt((rating / allReviews.length) * 100)}%"></span></div></td>
+      <td>${parseInt((rating / allReviews.length) * 100)}%</td>
+    </tr>
+    `,
+    );
+
+    reviewsBreakdown.innerHTML = `<table>${tableRowsHTML.join(" ")}</table>`;
+  };
+
   const updateReviewsWrapper = async () => {
     try {
       reviews = await getProductReviewsByID();
       if (reviews && reviews.length > 0) {
         await populateReviewsWrapper();
+        await populateOverviewWrapper();
+        await populateReviewsBreakdown();
         await handleHelpfulButtons();
         await handleLoadMoreButton();
       } else {
@@ -111,6 +167,11 @@ const handleReviews = (async () => {
       </div>
     </div>`;
 
+    filtersWrapper.style = "display: none";
+    overviewStars.style = "display: none;";
+    overviewRatings.style = "display: none;";
+    // overview.style = "display: none";
+
     const fakeReviewTrigger = document.querySelector(".fake-review-trigger");
     const trigger = document.querySelector("#fld-write-review");
 
@@ -139,7 +200,9 @@ const handleReviews = (async () => {
                 <h4 class="reviewer-name">${review.user_name}</h4>
               </div>
               <div class="star-wrapper">
+                <div class="stars">
                 ${starsHTML}
+                </div>
                 <h3 class="review-title">
                   <strong>${review.title}</strong>
                 </h3>
@@ -167,7 +230,7 @@ const handleReviews = (async () => {
     if (reviews.length === limit) {
       wrapper.insertAdjacentHTML(
         "beforeend",
-        `<div class="button-wrapper"><button" class="load-more-reviews button button--primary">Load More</button></div>`,
+        `<div class="button-wrapper load-more-button-wrapper"><button" class="load-more-reviews button button--primary">Load More</button></div>`,
       );
     }
   };
@@ -182,7 +245,7 @@ const handleReviews = (async () => {
     productId = root.dataset.product;
     emptyReviewsContent = root.dataset.emptyreviewscontent;
     userProfile = root.dataset.userimg;
-
+    allReviews = await getAllProductReviews(productId);
     await updateReviewsWrapper();
   }
 })();

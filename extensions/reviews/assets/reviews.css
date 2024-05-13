@@ -56,14 +56,19 @@
   margin: 1rem 0 0;
   display: flex;
   align-items: center;
+  flex-flow: row wrap;
 }
 
 .star-wrapper span {
   height: 24px;
 }
 
-.review .star-wrapper .review-title {
-  margin-left: 1rem;
+.review .star-wrapper {
+  gap: 1rem;
+}
+
+.review .star-wrapper .stars {
+  display: flex;
 }
 
 .star-wrapper .ratings-count {
@@ -76,7 +81,6 @@ div.number-of-ratings {
 }
 
 .star-label {
-  margin-left: 0.5rem;
   font-weight: medium;
 }
 
@@ -221,4 +225,45 @@ div.number-of-ratings {
 
 .review .helpful-wrapper .button-wrapper small.error {
   color: #dc3545;
+}
+
+.reviews-breakdown {
+  margin-top: 2rem;
+}
+
+.reviews-breakdown table {
+  width: 100%;
+  border: 0;
+  box-shadow: unset;
+}
+
+.reviews-breakdown table .progress-bar {
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px #bbbfbf;
+  background-color: #f0f2f2;
+  height: 20px;
+}
+
+.reviews-breakdown table td {
+  padding: 0;
+  border: 0;
+}
+
+.reviews-breakdown table td:nth-of-type(2) {
+  width: 70%;
+}
+
+.reviews-breakdown table td:nth-of-type(3) {
+  text-align: right;
+}
+
+.reviews-breakdown table .progress-bar span {
+  background: #ffa41c;
+  height: 100%;
+  display: block;
+}
+
+.load-more-button-wrapper {
+  justify-content: center;
+  display: flex;
 }

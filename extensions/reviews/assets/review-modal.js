@@ -126,7 +126,7 @@ const handleReviewModal = (async () => {
     const IPResponse = await fetch("https://api.ipify.org?format=json");
     const { ip } = await IPResponse.json();
 
-    const ReviewResponse = await fetch(`${formAction}${productId}/${ip}`);
+    const ReviewResponse = await fetch(`${formAction}${productId}/ip/${ip}`);
     const { data } = await ReviewResponse.json();
 
     return data;

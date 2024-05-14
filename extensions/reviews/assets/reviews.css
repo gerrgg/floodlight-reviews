@@ -2,6 +2,10 @@
   /* margin: 0; */
 }
 
+.customer-reviews-top .star-label {
+  margin-left: 1rem;
+}
+
 .fld-reviews {
   display: flex;
   gap: 2rem;
@@ -266,4 +270,14 @@ div.number-of-ratings {
 .load-more-button-wrapper {
   justify-content: center;
   display: flex;
+}
+
+.filters .filter {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.filters .filter .select {
+  max-width: 400px;
 }

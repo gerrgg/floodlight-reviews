@@ -3,7 +3,7 @@
 client_id = "edbd0c2ea55db55368b4365802de0b43"
 name = "floodlight-reviews"
 handle = "floodlight-reviews"
-application_url = "https://grid-careers-celtic-chip.trycloudflare.com"
+application_url = "https://accountability-qualification-palace-gathering.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://grid-careers-celtic-chip.trycloudflare.com/auth/callback",
-  "https://grid-careers-celtic-chip.trycloudflare.com/auth/shopify/callback",
-  "https://grid-careers-celtic-chip.trycloudflare.com/api/auth/callback"
+  "https://accountability-qualification-palace-gathering.trycloudflare.com/auth/callback",
+  "https://accountability-qualification-palace-gathering.trycloudflare.com/auth/shopify/callback",
+  "https://accountability-qualification-palace-gathering.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -13,7 +13,7 @@
 {% assign successMessage = block.settings.successMessage %}
 {% assign successIcon = block.settings.successIcon %}
 
-{% assign baseUrl = 'https://grid-careers-celtic-chip.trycloudflare.com/' %}
+{% assign baseUrl = 'https://accountability-qualification-palace-gathering.trycloudflare.com/' %}
 {% assign submitPath = 'app/publicReviews/' %}
 
 {%- style -%}
@@ -44,11 +44,14 @@
     <div class="filters">
       <div class="filter">
         <label>Sort by</label>
-        <select name="sort-by" id="sort-by">
-          <option value="helpful">Most Helpful</option>
-          <option value="recent">Most Recent</option>
-          <option value="top">Top Rated</option>
-        </select>
+        <div class="select">
+          <select class="select__select" name="sort-by" id="sort-by">
+            <option value="helpful">Most Helpful</option>
+            <option value="recent">Most Recent</option>
+            <option value="top">Top Rated</option>
+          </select>
+          {% render 'icon-caret' %}
+        </div>
       </div>
     </div>
     <h2 id="filter-header"><span>Most Helpful</span> reviews</h2>

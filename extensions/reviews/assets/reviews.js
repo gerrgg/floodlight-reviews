@@ -112,13 +112,12 @@ const handleReviews = (async () => {
     const ratings = [0, 0, 0, 0, 0];
 
     allReviews.forEach((r) => (ratings[r.rating - 1] += 1));
-
-    console.log(ratings);
+    const reverseRatings = ratings.reverse();
 
     const tableRowsHTML = ratings.map(
       (rating, i) => `
     <tr>
-      <td>${i + 1} star</td>
+      <td>${ratings.length - i} star</td>
       <td><div class="progress-bar"><span style="width: ${parseInt((rating / allReviews.length) * 100)}%"></span></div></td>
       <td>${parseInt((rating / allReviews.length) * 100)}%</td>
     </tr>

@@ -1,0 +1,10 @@
+{{ 'reviews.css' | asset_url | stylesheet_tag }}
+<script src="{{'reviews-star-override.js' |  asset_url}}" defer></script>
+
+{% schema %}
+  {
+    "name": "App Embed",
+    "target": "body",
+    "settings": []
+  }
+{% endschema %}

@@ -1,132 +1,122 @@
 import { json } from "@remix-run/node";
-import { useLoaderData, Link, useNavigate } from "@remix-run/react";
+import { useState } from "react";
+import {
+  useLoaderData,
+  Link,
+  useNavigate,
+  useSubmit,
+  useNavigation,
+} from "@remix-run/react";
 import { authenticate } from "../shopify.server";
 import {
   Card,
-  EmptyState,
-  Layout,
   Page,
-  IndexTable,
-  Thumbnail,
   Text,
-  Icon,
-  InlineStack,
+  BlockStack,
+  InlineGrid,
+  Box,
+  TextField,
+  Layout,
+  PageActions,
 } from "@shopify/polaris";
-
-import { getQRCodes } from "../models/QRCode.server";
-import { AlertDiamondIcon, ImageIcon } from "@shopify/polaris-icons";
 
 // Load QR codes using the qrcodes function from app/models/QRCode.server.js, and return them in a JSON Response.
 export async function loader({ request }) {
   const { admin, session } = await authenticate.admin(request);
-  const qrCodes = await getQRCodes(session.shop, admin.graphql);
+
+  const { getAppInstallationSendgridAPIkey } = await import(
+    "../models/Settings.server"
+  );
+
+  const apiKey = await getAppInstallationSendgridAPIkey(admin.graphql);
+  // const apiKey = await getSendgridAPIKey(AppInstallationID, admin.graphql);
 
   return json({
-    qrCodes,
+    apiKey,
   });
 }
 
-// If there are no QR codes, use EmptyState to present a call to action to create QR codes.
-const EmptyQRCodeState = ({ onAction }) => (
-  <EmptyState
-    heading="Create unique QR codes for your product"
-    action={{
-      content: "Create QR code",
-      onAction,
-    }}
-    image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-  >
-    <p>Allow customers to scan codes and buy products using their phones.</p>
-  </EmptyState>
-);
+export async function action({ request, params }) {
+  const { session, admin } = await authenticate.admin(request);
+  const { shop } = session;
 
-function truncate(str, { length = 25 } = {}) {
-  if (!str) return "";
-  if (str.length <= length) return str;
-  return str.slice(0, length) + "…";
+  const data = {
+    ...Object.fromEntries(await request.formData()),
+    shop,
+  };
+
+  const { setSendgridAPIKey } = await import("../models/Settings.server");
+
+  await setSendgridAPIKey(data.apiKey, admin.graphql);
+
+  return json({ status: 201 });
 }
-
-// If QR codes are present, list them
-const QRTable = ({ qrCodes }) => (
-  <IndexTable
-    resourceName={{
-      singular: "QR code",
-      plural: "QR codes",
-    }}
-    itemCount={qrCodes.length}
-    headings={[
-      { title: "Thumbnail", hidden: true },
-      { title: "Title" },
-      { title: "Product" },
-      { title: "Date created" },
-      { title: "Scans" },
-    ]}
-    selectable={false}
-  >
-    {qrCodes.map((qrCode) => (
-      <QRTableRow key={qrCode.id} qrCode={qrCode} />
-    ))}
-  </IndexTable>
-);
-
-// Map over each QR code and render an IndexTable.Row that uses Polaris components to structure the row and render QR code information.
-const QRTableRow = ({ qrCode }) => (
-  <IndexTable.Row id={qrCode.id} position={qrCode.id}>
-    <IndexTable.Cell>
-      <Thumbnail
-        source={qrCode.productImage || ImageIcon}
-        alt={qrCode.productTitle}
-        size="small"
-      />
-    </IndexTable.Cell>
-    <IndexTable.Cell>
-      <Link to={`qrcodes/${qrCode.id}`}>{truncate(qrCode.title)}</Link>
-    </IndexTable.Cell>
-    <IndexTable.Cell>
-      {/* Warn when a product that a QR code is built for is deleted */}
-      {qrCode.productDeleted ? (
-        <InlineStack align="start" gap="200">
-          <span style={{ width: "20px" }}>
-            <Icon source={AlertDiamondIcon} tone="critical" />
-          </span>
-          <Text tone="critical" as="span">
-            product has been deleted
-          </Text>
-        </InlineStack>
-      ) : (
-        truncate(qrCode.productTitle)
-      )}
-    </IndexTable.Cell>
-    <IndexTable.Cell>
-      {new Date(qrCode.createdAt).toDateString()}
-    </IndexTable.Cell>
-    <IndexTable.Cell>{qrCode.scans}</IndexTable.Cell>
-  </IndexTable.Row>
-);
 
 // layout
 export default function Index() {
-  const { qrCodes } = useLoaderData();
-  const navigate = useNavigate();
+  const submitDisabled = useState(true);
+  const apiKey = useLoaderData();
+  const [formState, setFormState] = useState(apiKey);
+  const [cleanFormState, setCleanFormState] = useState(apiKey);
+  const isDirty = JSON.stringify(formState) !== JSON.stringify(cleanFormState);
+
+  const submit = useSubmit();
+
+  const nav = useNavigation();
+  const isSaving = nav.state === "submitting";
+
+  function handleSave() {
+    const data = {
+      apiKey: formState.apiKey,
+    };
+
+    setCleanFormState({ ...formState });
+    submit(data, { method: "post" });
+  }
 
   return (
     <Page>
-      <ui-title-bar title="QR codes">
-        <button variant="primary" onClick={() => navigate("/app/qrcodes/new")}>
-          Create QR code
-        </button>
-      </ui-title-bar>
-      <Layout>
-        <Layout.Section>
-          <Card padding="0">
-            {qrCodes.length === 0 ? (
-              <EmptyQRCodeState onAction={() => navigate("qrcodes/new")} />
-            ) : (
-              <QRTable qrCodes={qrCodes} />
-            )}
+      <ui-title-bar title={"Settings"}></ui-title-bar>
+      <BlockStack gap={{ xs: "800", sm: "400" }}>
+        <InlineGrid columns={{ xs: "1fr", md: "2fr 5fr" }} gap="400">
+          <Box
+            as="section"
+            paddingInlineStart={{ xs: 400, sm: 0 }}
+            paddingInlineEnd={{ xs: 400, sm: 0 }}
+          >
+            <BlockStack gap="400">
+              <Text as="h3" variant="headingMd">
+                Sendgrid
+              </Text>
+              <Text as="p" variant="bodyMd">
+                Enter your sendgrid API key to send review email reminders to
+                customers.
+              </Text>
+            </BlockStack>
+          </Box>
+          <Card roundedAbove="sm">
+            <BlockStack gap="400">
+              <TextField
+                value={formState.apiKey}
+                label="Sendgrid API Key"
+                id="apikey"
+                labelHidden
+                autoComplete="off"
+                onChange={(apiKey) => setFormState({ ...formState, apiKey })}
+              />
+            </BlockStack>
           </Card>
-        </Layout.Section>
-      </Layout>
+        </InlineGrid>
+      </BlockStack>
+      <Layout.Section>
+        <PageActions
+          primaryAction={{
+            content: "Save",
+            disabled: !isDirty || isSaving,
+            onAction: handleSave,
+          }}
+        />
+      </Layout.Section>
     </Page>
   );
 }

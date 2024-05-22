@@ -3,7 +3,7 @@
 client_id = "edbd0c2ea55db55368b4365802de0b43"
 name = "floodlight-reviews"
 handle = "floodlight-reviews"
-application_url = "https://accountability-qualification-palace-gathering.trycloudflare.com"
+application_url = "https://anne-impressed-rca-levels.trycloudflare.com"
 embedded = true
 
 [build]
@@ -13,13 +13,13 @@ include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
+scopes = "read_customers,read_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://accountability-qualification-palace-gathering.trycloudflare.com/auth/callback",
-  "https://accountability-qualification-palace-gathering.trycloudflare.com/auth/shopify/callback",
-  "https://accountability-qualification-palace-gathering.trycloudflare.com/api/auth/callback"
+  "https://anne-impressed-rca-levels.trycloudflare.com/auth/callback",
+  "https://anne-impressed-rca-levels.trycloudflare.com/auth/shopify/callback",
+  "https://anne-impressed-rca-levels.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

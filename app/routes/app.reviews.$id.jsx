@@ -80,11 +80,11 @@ export async function action({ request, params }) {
       ? await db.Review.create({ data })
       : await db.Review.update({ where: { id: Number(params.id) }, data });
 
-  const { setAverageReviewMetafield, setReviewsMetafield } = await import(
+  const { setAverageReviewMetafield2, setReviewsMetafield } = await import(
     "../models/Review.server"
   );
 
-  await setAverageReviewMetafield(data, admin.graphql);
+  await setAverageReviewMetafield2(data, admin.graphql);
   await setReviewsMetafield(data, admin.graphql);
 
   return redirect(`/app/reviews/${review.id}`);

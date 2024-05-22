@@ -7,7 +7,10 @@ const handleReviews = (async () => {
     emptyReviewsContent,
     userProfile,
     sort,
+    perPage,
+    showHistogram,
     allReviews;
+
   const root = document.querySelector("#fld-reviews .review-wrapper");
   const loader = `<div class="loader"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>`;
   const sortSelect = document.querySelector("select#sort-by");
@@ -20,9 +23,10 @@ const handleReviews = (async () => {
   const overviewRatings = document.querySelector(
     "#fld-reviews .review-overview .number-of-ratings",
   );
-
+  const starRatingTop = document.querySelector(".star-rating-top");
   const reviewsBreakdown = document.querySelector(".reviews-breakdown");
 
+  // get all product reviews
   const getAllProductReviews = async () => {
     wrapper.innerHTML = loader;
     const ReviewResponse = await fetch(`${formAction}${productId}/`);
@@ -30,7 +34,8 @@ const handleReviews = (async () => {
     return data;
   };
 
-  const getProductReviewsByID = async () => {
+  // gets product reviews based on sort and limit
+  const getSortedProductReviews = async () => {
     wrapper.innerHTML = loader;
     const ReviewResponse = await fetch(
       `${formAction}${productId}/${sort}/${limit}`,
@@ -39,6 +44,7 @@ const handleReviews = (async () => {
     return data;
   };
 
+  // generates each reviews star rating, the size of the stars can be passed as a parameter
   const buildStarsHTML = (rating, size = 18) => {
     let array = Array.from({ length: 5 }).map((_, i) => {
       return i + 1 <= rating
@@ -53,6 +59,7 @@ const handleReviews = (async () => {
     return array.join(" ");
   };
 
+  // click action that sends a POST to the helpful route and returns feedback
   const handleHelpfulButtonClick = async ({ target }) => {
     const helpfulButton = target;
     const helpfulButtonWrapper = target.parentElement;
@@ -72,6 +79,7 @@ const handleReviews = (async () => {
     }
   };
 
+  // sets click events on helpful buttons
   const handleHelpfulButtons = async () => {
     const helpfulWrappers = Array.from(
       document.querySelectorAll(".helpful-wrapper"),
@@ -82,9 +90,10 @@ const handleReviews = (async () => {
     });
   };
 
+  // click event setup to increase the amount of reviews returned by the sorted review route
   const handleLoadMoreButton = () => {
     const loadMoreButton = document.querySelector(".load-more-reviews");
-    limit += 5;
+    limit += perPage;
 
     if (loadMoreButton) {
       loadMoreButton.addEventListener("click", async () => {
@@ -96,10 +105,13 @@ const handleReviews = (async () => {
     }
   };
 
+  // calculates the average of an array
   const averageRating = (array) => array.reduce((a, b) => a + b) / array.length;
 
+  // updates the ratings overview with average rating and star html
   const populateOverviewWrapper = async () => {
-    const rating = Math.ceil(averageRating(reviews.map((r) => r.rating)));
+    const rating = Math.round(averageRating(allReviews.map((r) => r.rating)));
+
     const html =
       buildStarsHTML(rating, 24) +
       ` <span class="star-label">${rating} out of 5</span>`;
@@ -108,12 +120,13 @@ const handleReviews = (async () => {
     overviewRatings.innerHTML = `<small>${allReviews.length} global ratings</small>`;
   };
 
+  // optionally generates a histogram of star ratings
   const populateReviewsBreakdown = async () => {
     const ratings = [0, 0, 0, 0, 0];
 
     allReviews.forEach((r) => (ratings[r.rating - 1] += 1));
-    const reverseRatings = ratings.reverse();
 
+    ratings.reverse();
     const tableRowsHTML = ratings.map(
       (rating, i) => `
     <tr>
@@ -127,14 +140,30 @@ const handleReviews = (async () => {
     reviewsBreakdown.innerHTML = `<table>${tableRowsHTML.join(" ")}</table>`;
   };
 
+  const handleReadMoreButtons = async () => {
+    const readMoreButtons = Array.from(
+      document.querySelectorAll(".review .review-content .read-more-button"),
+    );
+
+    readMoreButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        button.parentElement.classList.add("show-full-review");
+      });
+    });
+  };
+
+  // gets reviews and updates all relevant html, if something goes wrong defaults to error state
   const updateReviewsWrapper = async () => {
     try {
-      reviews = await getProductReviewsByID();
+      reviews = await getSortedProductReviews();
       if (reviews && reviews.length > 0) {
         await populateReviewsWrapper();
         await populateOverviewWrapper();
-        await populateReviewsBreakdown();
+        if (showHistogram === "true") {
+          await populateReviewsBreakdown();
+        }
         await handleHelpfulButtons();
+        await handleReadMoreButtons();
         await handleLoadMoreButton();
       } else {
         handleErrorState();
@@ -144,9 +173,10 @@ const handleReviews = (async () => {
     }
   };
 
+  // updates sort and limit before regenerating the html
   const handleSortByChange = async ({ target }) => {
     sort = target.value;
-    limit = 5;
+    limit = perPage;
 
     const labels = {
       recent: "Most recent",
@@ -181,6 +211,32 @@ const handleReviews = (async () => {
     }
   };
 
+  function truncateString(str, length) {
+    if (length >= str.length) {
+      return {
+        truncated: str,
+        remaining: "",
+      };
+    }
+
+    // Find the last space within the desired length
+    let end = str.lastIndexOf(" ", length);
+
+    // If no space is found within the length, use the full length
+    if (end === -1) {
+      end = length;
+    }
+
+    let truncated = str.slice(0, end).trim();
+    let remaining = str.slice(end).trim();
+
+    return {
+      truncated: truncated,
+      remaining: remaining,
+    };
+  }
+
+  // generates the html for the list of reviews
   const populateReviewsWrapper = async () => {
     if (reviews && reviews === null) {
       html = `
@@ -190,6 +246,16 @@ const handleReviews = (async () => {
     } else {
       html = reviews.map((review) => {
         let starsHTML = buildStarsHTML(review.rating);
+        const { truncated, remaining } = truncateString(
+          review.reviewContent,
+          255,
+        );
+
+        let reviewText = truncated;
+
+        if (remaining.length) {
+          reviewText += `<span class="ellipsis">...</span><span class="remaining"> ${remaining}</span> <button class=" read-more-button">Read more</button>`;
+        }
 
         const reviewHTML = `
           <div class="review card">
@@ -209,7 +275,7 @@ const handleReviews = (async () => {
               <div class="mb-2 review-date">
                 <small>Reviewed on ${new Date(review.createdAt).toDateString()}</small>
               </div>
-              <p class="my-0 review-content">${review.reviewContent}</p>
+              <p class="my-0 review-content">${reviewText}</p>
               <div class="helpful-wrapper">
                 <small style="display: ${review.helpful > 0 ? "block" : "none"}">${review.helpful} people found this helpful</small>
                 <div class="button-wrapper">
@@ -226,7 +292,8 @@ const handleReviews = (async () => {
 
     wrapper.innerHTML = html.join(" ");
 
-    if (reviews.length === limit) {
+    // conditionally renders a load more button based on the reviews shown and how many there are total
+    if (limit < allReviews.length) {
       wrapper.insertAdjacentHTML(
         "beforeend",
         `<div class="button-wrapper load-more-button-wrapper"><button" class="load-more-reviews button button--primary">Load More</button></div>`,
@@ -234,17 +301,36 @@ const handleReviews = (async () => {
     }
   };
 
+  const updateStarRatingTop = () => {
+    const rating = Math.round(averageRating(allReviews.map((r) => r.rating)));
+    const html =
+      buildStarsHTML(rating, 24) +
+      `<span class="ratings-count">(${allReviews.length})</span>`;
+    starRatingTop.innerHTML = html;
+  };
+
+  // sets change event on select
   if (sortSelect) {
     sort = sortSelect.value;
     sortSelect.addEventListener("change", handleSortByChange);
   }
 
+  // assigns all data passed from liquid to variables for use in application
   if (root) {
     formAction = root.dataset.api;
     productId = root.dataset.product;
     emptyReviewsContent = root.dataset.emptyreviewscontent;
     userProfile = root.dataset.userimg;
+    showHistogram = root.dataset.showhistogram;
+    perPage = parseInt(root.dataset.perpage);
+    limit = perPage;
+
     allReviews = await getAllProductReviews(productId);
+
+    if (starRatingTop) {
+      updateStarRatingTop();
+    }
+
     await updateReviewsWrapper();
   }
 })();

@@ -63,8 +63,20 @@
   flex-flow: row wrap;
 }
 
+.star-wrapper svg {
+  color: #ffa41c;
+}
+
+.star-wrapper .ratings-count {
+  line-height: 1 !important;
+}
+
 .star-wrapper span {
   height: 24px;
+}
+
+.rating-count.caption {
+  display: none;
 }
 
 .review .star-wrapper {
@@ -241,6 +253,29 @@ div.number-of-ratings {
   box-shadow: unset;
 }
 
+.review-content .remaining {
+  display: none;
+}
+
+.read-more-button {
+  min-height: unset;
+  min-width: unset;
+  background: unset;
+  border: unset;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.review-content.show-full-review .remaining {
+  display: inline;
+}
+
+.review-content.show-full-review .read-more-button,
+.review-content.show-full-review .ellipsis {
+  display: none;
+}
+
 .reviews-breakdown table .progress-bar {
   overflow: hidden;
   box-shadow: inset 0 0 0 1px #bbbfbf;
@@ -280,4 +315,23 @@ div.number-of-ratings {
 
 .filters .filter .select {
   max-width: 400px;
+}
+
+@media screen and (max-width: 900px) {
+  .fld-reviews {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .review-overview {
+    max-width: 100%;
+    border-right: 0;
+    border-top: 1px solid #bbbfbf;
+  }
+
+  .filters .filter {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
 }

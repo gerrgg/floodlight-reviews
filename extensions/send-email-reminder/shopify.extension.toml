@@ -1,0 +1,37 @@
+[[extensions]]
+name = "send-email-reminder"
+type = "flow_action"
+handle = "send-email-reminder"
+description = "Your description"
+runtime_url = "https://anne-impressed-rca-levels.trycloudflare.com/app/sendEmailReminder"
+
+[settings]
+
+  [[settings.fields]]
+  type = "order_reference"
+  required = true
+
+  [[settings.fields]]
+  type = "single_line_text_field"
+  key = "subject"
+  name = "Subject"
+  required = true
+
+  [[settings.fields]]
+  type = "multi_line_text_field"
+  key = "email-body"
+  name = "Email Body"
+  required = true
+
+  [[settings.fields]]
+  type = "single_line_text_field"
+  key = "logo_url"
+  name = "Logo URL"
+  description = "URL of shop logo"
+
+  [[settings.fields]]
+  type = "single_line_text_field"
+  key = "button_color"
+  name = "Button Color"
+  description = "Enter HEX code of desired button color"
+

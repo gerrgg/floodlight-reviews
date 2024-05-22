@@ -1,5 +1,6 @@
 import { json } from "@remix-run/node";
-import { useLoaderData, Link, useNavigate } from "@remix-run/react";
+import { useLoaderData, Link, useNavigate, useSubmit } from "@remix-run/react";
+import { useState, useLayoutEffect } from "react";
 import { authenticate } from "../shopify.server";
 import {
   Card,
@@ -12,14 +13,15 @@ import {
   Icon,
   InlineStack,
   Button,
+  useIndexResourceState,
 } from "@shopify/polaris";
-
 import { getReviews } from "../models/Review.server";
 import {
   AlertDiamondIcon,
   ImageIcon,
   StarIcon,
   StarFilledIcon,
+  DeleteIcon,
 } from "@shopify/polaris-icons";
 
 // Load QR codes using the reviews function from app/models/Review.server.js, and return them in a JSON Response.
@@ -30,6 +32,19 @@ export async function loader({ request }) {
   return json({
     reviews,
   });
+}
+
+export async function action({ request, params }) {
+  const { session, admin } = await authenticate.admin(request);
+  const data = {
+    ...Object.fromEntries(await request.formData()),
+  };
+
+  console.log(data);
+
+  // await db.Review.delete({ where: { id: Number(params.id) } });
+
+  return json({ status: 201 });
 }
 
 // If there are no QR codes, use EmptyState to present a call to action to create QR codes.
@@ -53,33 +68,72 @@ function truncate(str, { length = 25 } = {}) {
 }
 
 // If QR codes are present, list them
-const ReviewTable = ({ reviews }) => (
-  <IndexTable
-    resourceName={{
-      singular: "Review",
-      plural: "Reviews",
-    }}
-    itemCount={reviews.length}
-    headings={[
-      { title: "Thumbnail", hidden: true },
-      { title: "Product" },
-      { title: "Title" },
-      { title: "Rating" },
-      { title: "Status" },
-      { title: "Date created" },
-    ]}
-    selectable={false}
-  >
-    {reviews.map((review) => (
-      <ReviewTableRow key={review.id} review={review} />
-    ))}
-  </IndexTable>
-);
+const ReviewTable = ({ reviews }) => {
+  const { selectedResources, allResourcesSelected, handleSelectionChange } =
+    useIndexResourceState(reviews);
+
+  const submit = useSubmit();
+
+  const bulkActions = [
+    {
+      content: "Publish",
+      onAction: () => console.log("Todo: implement publish"),
+    },
+    {
+      icon: DeleteIcon,
+      destructive: true,
+      content: "Delete reviews",
+      onAction: () => {
+        const data = {
+          ids: selectedResources,
+        };
+
+        submit(data, { method: "post", action: "/app/reviews/delete" });
+      },
+    },
+  ];
+
+  return (
+    <IndexTable
+      resourceName={{
+        singular: "Review",
+        plural: "Reviews",
+      }}
+      itemCount={reviews.length}
+      selectedItemsCount={
+        allResourcesSelected ? "All" : selectedResources.length
+      }
+      onSelectionChange={handleSelectionChange}
+      headings={[
+        { title: "Thumbnail", hidden: true },
+        { title: "Product" },
+        { title: "Title" },
+        { title: "Rating" },
+        { title: "Status" },
+        { title: "Date created" },
+      ]}
+      promotedBulkActions={bulkActions}
+      selectable={true}
+    >
+      {reviews.map((review) => (
+        <ReviewTableRow
+          selectedResources={selectedResources}
+          key={review.id}
+          review={review}
+        />
+      ))}
+    </IndexTable>
+  );
+};
 
 // Map over each QR code and render an IndexTable.Row that uses Polaris components to structure the row and render QR code information.
-const ReviewTableRow = ({ review }) => {
+const ReviewTableRow = ({ review, selectedResources }) => {
   return (
-    <IndexTable.Row id={review.id} position={review.id}>
+    <IndexTable.Row
+      id={review.id}
+      position={review.id}
+      selected={selectedResources.includes(review.id)}
+    >
       <IndexTable.Cell>
         <Thumbnail
           source={review.productImage || ImageIcon}

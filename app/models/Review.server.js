@@ -180,6 +180,63 @@ export async function setAverageReviewMetafield(review, graphql) {
   );
 }
 
+export async function setAverageReviewMetafield2(review, graphql) {
+  const reviews = await getAllProductReviews(review.shop, review.productId);
+  const ratings = reviews.map((r) => r.rating);
+  const avg = Math.ceil(
+    ratings.reduce((sum, a) => sum + a, 0) / ratings.length,
+  );
+
+  const avgObject = {
+    value: avg,
+    scale_min: 1.0,
+    scale_max: 5.0,
+  };
+
+  const avgJSON = JSON.stringify(avgObject);
+
+  await graphql(
+    `
+      mutation productUpdate($metafields: [MetafieldsSetInput!]!) {
+        metafieldsSet(metafields: $metafields) {
+          metafields {
+            key
+            namespace
+            value
+            createdAt
+            updatedAt
+          }
+          userErrors {
+            field
+            message
+            code
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        metafields: [
+          {
+            key: "rating",
+            namespace: "reviews",
+            ownerId: review.productId,
+            type: "rating",
+            value: avgJSON,
+          },
+          {
+            key: "rating_count",
+            namespace: "reviews",
+            ownerId: review.productId,
+            type: "number_integer",
+            value: String(reviews.length),
+          },
+        ],
+      },
+    },
+  );
+}
+
 // QR code validation, title, product and destination URL is required
 export function validateReview(data) {
   const errors = {};
